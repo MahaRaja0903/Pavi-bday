@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { HandLandmarker } from "@mediapipe/tasks-vision";
 import { burst, plant, step, type Flower } from "@/lib/garden";
-import { createHandLandmarker, INDEX_TIP, isOpenHand, isPointing, WRIST } from "@/lib/hands";
+import { createHandLandmarker, HAND_CONNECTIONS, INDEX_TIP, isOpenHand, isPointing, WRIST } from "@/lib/hands";
 import { loadFlowers } from "@/lib/loadFlowers";
 
 /** Frames of open palm required before a burst fires — kills flicker-explosions. */
@@ -25,10 +25,12 @@ export default function FlowerWand() {
   const lastPointsRef = useRef<(Point | null)[]>([null, null]);
   const openFramesRef = useRef(0);
   const lastBurstRef = useRef(0);
+  const handsRef = useRef<Point[][]>([]);
 
   const [running, setRunning] = useState(false);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [showSkeleton, setShowSkeleton] = useState(true);
 
   /** Map a normalized landmark to mirrored, object-fit:cover screen coords. */
   const toScreen = useCallback((nx: number, ny: number): Point => {
@@ -79,6 +81,7 @@ export default function FlowerWand() {
       lastVideoTimeRef.current = video.currentTime;
       const result = landmarker.detectForVideo(video, now);
       const hands = result.landmarks ?? [];
+      handsRef.current = hands.map((lm) => lm.map((p) => toScreen(p.x, p.y)));
 
       const anyOpen = hands.some((lm) => isOpenHand(lm));
       openFramesRef.current = anyOpen ? openFramesRef.current + 1 : 0;
@@ -115,7 +118,28 @@ export default function FlowerWand() {
 
     ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     step(gardenRef.current, ctx, now);
-  }, [toScreen]);
+
+    if (showSkeleton) {
+      ctx.lineWidth = 2;
+      for (const pts of handsRef.current) {
+        ctx.strokeStyle = "rgba(243, 239, 230, 0.55)";
+        ctx.beginPath();
+        for (const [a, b] of HAND_CONNECTIONS) {
+          ctx.moveTo(pts[a].x, pts[a].y);
+          ctx.lineTo(pts[b].x, pts[b].y);
+        }
+        ctx.stroke();
+
+        for (let i = 0; i < pts.length; i++) {
+          const isTip = i === INDEX_TIP;
+          ctx.beginPath();
+          ctx.arc(pts[i].x, pts[i].y, isTip ? 7 : 3, 0, Math.PI * 2);
+          ctx.fillStyle = isTip ? "#f5de9f" : "rgba(243, 239, 230, 0.8)";
+          ctx.fill();
+        }
+      }
+    }
+  }, [toScreen, showSkeleton]);
 
   const start = useCallback(async () => {
     setError("");
@@ -150,9 +174,14 @@ export default function FlowerWand() {
   }, [loop, resizeCanvas]);
 
   useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "s") setShowSkeleton((v) => !v);
+    };
     window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("keydown", onKey);
       cancelAnimationFrame(rafRef.current);
       landmarkerRef.current?.close();
       const stream = videoRef.current?.srcObject as MediaStream | null;
