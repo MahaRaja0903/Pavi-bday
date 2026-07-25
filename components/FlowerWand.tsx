@@ -146,6 +146,7 @@ export default function FlowerWand() {
     try {
       setStatus("Loading flowers…");
       imagesRef.current = await loadFlowers();
+      console.log("flowers loaded:", imagesRef.current.length);
       if (imagesRef.current.length === 0) {
         throw new Error("No flower PNGs found. Add some to /public/flowers first.");
       }

@@ -20,9 +20,9 @@ export type Flower = {
 
 /** Tuning knobs — all in one place so you can taste-test quickly. */
 export const CONFIG = {
-  minSpacing: 20, // px between consecutive spawns along a stroke
-  sizeMin: 34,
-  sizeMax: 80,
+  minSpacing: 18, // px between consecutive spawns along a stroke
+  sizeMin: 20,
+  sizeMax: 60,
   growMs: 260, // pop-in duration
   breatheMs: 620, // breathing period
   breatheAmount: 0.09, // ±9% scale
