@@ -156,7 +156,11 @@ export default function FlowerWand() {
 
       setStatus("Starting camera…");
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: {
+          facingMode: "user",
+          aspectRatio: { ideal: window.innerWidth / window.innerHeight },
+          width: { ideal: 1280 }, // hint at quality; the ratio drives the shape
+        },
         audio: false,
       });
 
