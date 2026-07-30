@@ -26,6 +26,7 @@ export default function FlowerWand() {
   const openFramesRef = useRef(0);
   const lastBurstRef = useRef(0);
   const handsRef = useRef<Point[][]>([]);
+  const startTimeRef = useRef<number>(0);
 
   const [running, setRunning] = useState(false);
   const [status, setStatus] = useState("");
@@ -116,6 +117,23 @@ export default function FlowerWand() {
       }
     }
 
+    // Flower Rain for the first 10 seconds
+    if (startTimeRef.current > 0 && now - startTimeRef.current < 10000) {
+      if (Math.random() < 0.4 && imagesRef.current.length > 0) {
+        const x = Math.random() * canvas.clientWidth;
+        const y = -50; // spawn above screen
+        plant(gardenRef.current, x, y, imagesRef.current, null);
+        const f = gardenRef.current[gardenRef.current.length - 1];
+        if (f) {
+          f.state = "burst";
+          f.vx = (Math.random() - 0.5) * 6;
+          f.vy = Math.random() * 4 + 2;
+          f.spin = (Math.random() - 0.5) * 0.2;
+          f.alpha = 1.8; // Gives it slightly more time before fully fading
+        }
+      }
+    }
+
     ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     step(gardenRef.current, ctx, now);
 
@@ -167,6 +185,7 @@ export default function FlowerWand() {
       setRunning(true);
       setStatus("");
       resizeCanvas();
+      startTimeRef.current = performance.now();
       rafRef.current = requestAnimationFrame(loop);
     } catch (err) {
       setStatus("");

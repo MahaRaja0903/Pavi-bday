@@ -2,9 +2,10 @@
 
 import dynamic from "next/dynamic";
 
-// Camera + WASM only exist in the browser, so skip SSR entirely.
-const FlowerWand = dynamic(() => import("@/components/FlowerWand"), { ssr: false });
+// Since BirthdayApp uses framer-motion and some browser specific features (like window/canvas confetti),
+// it's safest to dynamically import it without SSR.
+const BirthdayApp = dynamic(() => import("@/components/BirthdayApp"), { ssr: false });
 
 export default function Page() {
-  return <FlowerWand />;
+  return <BirthdayApp />;
 }

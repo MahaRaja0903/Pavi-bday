@@ -1,10 +1,14 @@
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
+import { Outfit, Dancing_Script } from "next/font/google";
 import "./globals.css";
 
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const dancingScript = Dancing_Script({ subsets: ["latin"], variable: "--font-dancing" });
+
 export const metadata: Metadata = {
-  title: "Flower Wand",
-  description: "Draw with your finger, grow a garden, open your hand to scatter it.",
+  title: "Birthday Surprise",
+  description: "A magical birthday surprise.",
 };
 
 export const viewport: Viewport = {
@@ -17,7 +21,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${outfit.variable} ${dancingScript.variable}`}>
         {children}
         <Analytics />
       </body>
