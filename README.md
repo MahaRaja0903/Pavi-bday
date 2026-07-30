@@ -37,3 +37,4 @@ of `components/FlowerWand.tsx` (`BURST_FRAMES`, `BURST_COOLDOWN_MS`).
 
 Push to GitHub, import in Vercel, done. No env vars needed. Camera access
 requires HTTPS, which Vercel gives you automatically.
+"# Pavi-bday" 
