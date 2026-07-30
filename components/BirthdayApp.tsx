@@ -9,7 +9,7 @@ import { Gift, Cake, Flower, Popsicle, Check, X } from "lucide-react";
 // Dynamically import FlowerWand to avoid SSR issues with its canvas/camera
 const FlowerWand = dynamic(() => import("@/components/FlowerWand"), { ssr: false });
 
-const VALID_NAMES = ["pavithra", "pavithra m", "pavithra m "];
+const VALID_NAMES = ["pavithra", "pavithra m", "pavithra m ", "maharaja"];
 
 const QUOTES = [
   "Calories don't count today. That's tomorrow's problem.",
